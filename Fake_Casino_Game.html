@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Stars Casino - Сохранение прогресса</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #ffcc00;
+            position: relative;
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
+            to { box-shadow: 0 0 30px rgba(255, 204, 0, 0.8); }
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+        
+        .warning {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff5555;
+            border-radius: 10px;
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .warning strong {
+            color: #ffcc00;
+        }
+        
+        .save-section {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .save-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .save-notification {
+            background: rgba(46, 204, 113, 0.3);
+            border: 1px solid #2ecc71;
+            border-radius: 10px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .save-notification.show {
+            opacity: 1;
+        }
+        
+        .casino-floor {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .slot-machine {
+            background: linear-gradient(to bottom, #2c3e50, #1a1a2e);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 25px;
+            width: 350px;
+            text-align: center;
+            border: 3px solid #ffcc00;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .slot-machine:hover {
+            transform: translateY(-5px);
+        }
+        
+        .slot-machine::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, #ffcc00, #ff9900, #ffcc00);
+            z-index: -1;
+            border-radius: 25px;
+        }
+        
+        .slot-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ffcc00;
+            text-transform: uppercase;
+        }
+        
+        .slots-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            perspective: 500px;
+        }
+        
+        .slot {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid #ffcc00;
+            transform-style: preserve-3d;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(to bottom, #ffcc00, #ff9900);
+            color: #1a1a2e;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            min-width: 120px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to bottom, #ffd700, #ffaa00);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .deposit-btn {
+            background: linear-gradient(to bottom, #00cc66, #00994d);
+        }
+        
+        .deposit-btn:hover {
+            background: linear-gradient(to bottom, #00e673, #00b359);
+        }
+        
+        .balance {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            border: 1px solid #ffcc00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .balance span {
+            color: #ffcc00;
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+        
+        .jackpot {
+            text-align: center;
+            background: linear-gradient(to right, #e74c3c, #c0392b, #e74c3c);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 30px auto;
+            max-width: 800px;
+            border: 3px solid #ffcc00;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 204, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
+        }
+        
+        .jackpot h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .jackpot-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffcc00;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+        }
+        
+        .win-message {
+            height: 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #ffcc00;
+            text-shadow: 0 0 5px rgba(255, 204, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .slot-machine:nth-child(2) {
+            transform: scale(1.05);
+            z-index: 1;
+        }
+        
+        .slot-machine:nth-child(2)::before {
+            background: linear-gradient(45deg, #ff00cc, #9900ff, #ff00cc);
+        }
+        
+        .slot-machine:nth-child(2) .slot {
+            background: linear-gradient(to bottom, #9b59b6, #8e44ad);
+        }
+        
+        .slot-machine:nth-child(3)::before {
+            background: linear-gradient(45deg, #00ffcc, #00ccff, #00ffcc);
+        }
+        
+        .slot-machine:nth-child(3) .slot {
+            background: linear-gradient(to bottom, #2ecc71, #27ae60);
+        }
+        
+        .symbols {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .symbol {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            border: 1px solid rgba(255, 204, 0, 0.5);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 204, 0, 0.3);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        /* Пополнение баланса */
+        .deposit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .deposit-content {
+            background: linear-gradient(to bottom, #2c3e50, #1a1a2e);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            border: 3px solid #00cc66;
+            box-shadow: 0 0 30px rgba(0, 204, 102, 0.5);
+        }
+        
+        .deposit-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #00cc66;
+        }
+        
+        .deposit-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .deposit-option {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            width: 130px;
+            cursor: pointer;
+            border: 2px solid #3498db;
+            transition: all 0.3s ease;
+        }
+        
+        .deposit-option:hover {
+            transform: scale(1.05);
+            border-color: #00cc66;
+            background: rgba(0, 204, 102, 0.1);
+        }
+        
+        .deposit-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffcc00;
+            margin-bottom: 5px;
+        }
+        
+        .deposit-bonus {
+            font-size: 0.9rem;
+            color: #00cc66;
+        }
+        
+        .close-modal {
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+            margin-top: 20px;
+        }
+        
+        .close-modal:hover {
+            background: linear-gradient(to bottom, #ff6b6b, #e74c3c);
+        }
+        
+        @media (max-width: 768px) {
+            .casino-floor {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .slot-machine {
+                width: 100%;
+                max-width: 350px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .save-section {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        /* Анимация барабанов */
+        @keyframes spin {
+            0% { transform: rotateX(0deg); }
+            100% { transform: rotateX(360deg); }
+        }
+        
+        .spinning {
+            animation: spin 0.5s infinite linear;
+        }
+        
+        /* Анимация выигрыша */
+        @keyframes win {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .win-animation {
+            animation: win 0.5s ease 3;
+        }
+        
+        /* Анимация пополнения */
+        @keyframes deposit {
+            0% { transform: scale(1); color: #fff; }
+            50% { transform: scale(1.1); color: #00cc66; }
+            100% { transform: scale(1); color: #fff; }
+        }
+        
+        .deposit-animation {
+            animation: deposit 0.5s ease;
+        }
+        
+        /* Анимация сохранения */
+        @keyframes save {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .save-animation {
+            animation: save 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-coins"></i> Lucky Stars Casino <i class="fas fa-coins"></i></h1>
+            <p class="subtitle">Ваш игровой прогресс сохраняется автоматически!</p>
+        </header>
+        
+        <div class="warning">
+            <strong>ВНИМАНИЕ:</strong> Это фейковое казино создано исключительно в развлекательных целях. Здесь не используются и не принимаются реальные деньги. Азартные игры могут вызывать зависимость. Играйте ответственно.
+        </div>
+        
+        <div class="save-section">
+            <button class="save-btn" onclick="saveGame()">
+                <i class="fas fa-save"></i> Сохранить игру
+            </button>
+            <button class="save-btn" onclick="resetGame()">
+                <i class="fas fa-redo"></i> Сбросить прогресс
+            </button>
+            <div class="save-notification" id="saveNotification">
+                <i class="fas fa-check-circle"></i>
+                <span id="saveTime">Игра сохранена!</span>
+            </div>
+        </div>
+        
+        <div class="jackpot">
+            <h2>★ СУПЕР ДЖЕКПОТ ★</h2>
+            <div class="jackpot-value">9 999 999 <span style="font-size: 1.5rem;">★</span></div>
+        </div>
+        
+        <div class="casino-floor">
+            <!-- Первый игровой автомат -->
+            <div class="slot-machine">
+                <h2 class="slot-title">Золотые Слитки</h2>
+                <div class="slots-container">
+                    <div class="slot" id="slot1-1">🍒</div>
+                    <div class="slot" id="slot1-2">🍋</div>
+                    <div class="slot" id="slot1-3">🍇</div>
+                </div>
+                <div class="controls">
+                    <button onclick="spin(1)"><i class="fas fa-play"></i> Крутить (10★)</button>
+                    <button onclick="maxBet(1)"><i class="fas fa-crown"></i> Макс. ставка (100★)</button>
+                    <button onclick="openDepositModal(1)" class="deposit-btn"><i class="fas fa-plus-circle"></i> Пополнить</button>
+                </div>
+                <div class="win-message" id="win1"></div>
+                <div class="balance">
+                    <div>Ваш баланс:</div>
+                    <div><span id="balance1">1 000</span> ★</div>
+                </div>
+            </div>
+            
+            <!-- Второй игровой автомат -->
+            <div class="slot-machine">
+                <h2 class="slot-title">Фиолетовая Удача</h2>
+                <div class="slots-container">
+                    <div class="slot" id="slot2-1">🍊</div>
+                    <div class="slot" id="slot2-2">🍉</div>
+                    <div class="slot" id="slot2-3">🔔</div>
+                </div>
+                <div class="controls">
+                    <button onclick="spin(2)"><i class="fas fa-play"></i> Крутить (10★)</button>
+                    <button onclick="maxBet(2)"><i class="fas fa-crown"></i> Макс. ставка (100★)</button>
+                    <button onclick="openDepositModal(2)" class="deposit-btn"><i class="fas fa-plus-circle"></i> Пополнить</button>
+                </div>
+                <div class="win-message" id="win2"></div>
+                <div class="balance">
+                    <div>Ваш баланс:</div>
+                    <div><span id="balance2">1 000</span> ★</div>
+                </div>
+            </div>
+            
+            <!-- Третий игровой автомат -->
+            <div class="slot-machine">
+                <h2 class="slot-title">Изумрудные Семь</h2>
+                <div class="slots-container">
+                    <div class="slot" id="slot3-1">🍀</div>
+                    <div class="slot" id="slot3-2">⭐</div>
+                    <div class="slot" id="slot3-3">💎</div>
+                </div>
+                <div class="controls">
+                    <button onclick="spin(3)"><i class="fas fa-play"></i> Крутить (10★)</button>
+                    <button onclick="maxBet(3)"><i class="fas fa-crown"></i> Макс. ставка (100★)</button>
+                    <button onclick="openDepositModal(3)" class="deposit-btn"><i class="fas fa-plus-circle"></i> Пополнить</button>
+                </div>
+                <div class="win-message" id="win3"></div>
+                <div class="balance">
+                    <div>Ваш баланс:</div>
+                    <div><span id="balance3">1 000</span> ★</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="symbols">
+            <div class="symbol">🍒</div>
+            <div class="symbol">🍋</div>
+            <div class="symbol">🍇</div>
+            <div class="symbol">🍊</div>
+            <div class="symbol">🍉</div>
+            <div class="symbol">🔔</div>
+            <div class="symbol">🍀</div>
+            <div class="symbol">⭐</div>
+            <div class="symbol">💎</div>
+        </div>
+        
+        <div class="footer">
+            <p>Lucky Stars Casino © 2023 | Это фейковое казино создано исключительно для демонстрации. Никакие реальные деньги не принимаются и не выплачиваются.</p>
+            <p>Играйте ответственно. Азартные игры могут вызывать зависимость.</p>
+            <p id="lastSaveInfo" style="margin-top: 10px;">Загрузка информации о сохранении...</p>
+        </div>
+    </div>
+
+    <!-- Модальное окно пополнения баланса -->
+    <div class="deposit-modal" id="depositModal">
+        <div class="deposit-content">
+            <h2 class="deposit-title"><i class="fas fa-wallet"></i> Пополнение баланса</h2>
+            <p>Выберите сумму для пополнения виртуального баланса</p>
+            
+            <div class="deposit-options">
+                <div class="deposit-option" onclick="deposit(500)">
+                    <div class="deposit-amount">500 ★</div>
+                    <div class="deposit-bonus">Базовый пакет</div>
+                </div>
+                <div class="deposit-option" onclick="deposit(1000)">
+                    <div class="deposit-amount">1000 ★</div>
+                    <div class="deposit-bonus">+ 50 ★ бонус</div>
+                </div>
+                <div class="deposit-option" onclick="deposit(2000)">
+                    <div class="deposit-amount">2000 ★</div>
+                    <div class="deposit-bonus">+ 200 ★ бонус</div>
+                </div>
+                <div class="deposit-option" onclick="deposit(5000)">
+                    <div class="deposit-amount">5000 ★</div>
+                    <div class="deposit-bonus">VIP + 1000 ★ бонус</div>
+                </div>
+            </div>
+            
+            <button class="close-modal" onclick="closeDepositModal()"><i class="fas fa-times"></i> Закрыть</button>
+        </div>
+    </div>
+
+    <script>
+        // Наборы символов для каждого автомата
+        const symbols = [
+            ['🍒', '🍋', '🍇', '🍊', '🍉', '🔔'],
+            ['🍊', '🍉', '🔔', '🍀', '⭐', '💎'],
+            ['🍀', '⭐', '💎', '🍒', '🍋', '🍇']
+        ];
+        
+        // Балансы для каждого автомата
+        let balances = [1000, 1000, 1000];
+        
+        // Текущий автомат для пополнения
+        let currentDepositMachine = 1;
+        
+        // Инициализация игры
+        function initGame() {
+            // Проверяем наличие сохраненных данных
+            const savedData = localStorage.getItem('casinoSave');
+            
+            if (savedData) {
+                try {
+                    const save = JSON.parse(savedData);
+                    
+                    // Обновляем балансы
+                    balances = save.balances || balances;
+                    
+                    // Обновляем UI
+                    for (let i = 1; i <= 3; i++) {
+                        document.getElementById(`balance${i}`).textContent = balances[i-1].toLocaleString();
+                    }
+                    
+                    // Обновляем информацию о сохранении
+                    if (save.timestamp) {
+                        const date = new Date(save.timestamp);
+                        const formattedDate = date.toLocaleString();
+                        document.getElementById('lastSaveInfo').textContent = `Последнее сохранение: ${formattedDate}`;
+                    }
+                    
+                    console.log('Игра загружена из сохранения');
+                } catch (e) {
+                    console.error('Ошибка при загрузке сохранения:', e);
+                }
+            }
+        }
+        
+        // Функция сохранения игры
+        function saveGame() {
+            const saveData = {
+                balances: balances,
+                timestamp: Date.now()
+            };
+            
+            localStorage.setItem('casinoSave', JSON.stringify(saveData));
+            
+            // Показываем уведомление
+            const notification = document.getElementById('saveNotification');
+            const saveTime = document.getElementById('saveTime');
+            
+            const date = new Date();
+            saveTime.textContent = `Сохранено: ${date.toLocaleTimeString()}`;
+            
+            notification.classList.add('show', 'save-animation');
+            
+            // Обновляем информацию в футере
+            document.getElementById('lastSaveInfo').textContent = `Последнее сохранение: ${date.toLocaleString()}`;
+            
+            setTimeout(() => {
+                notification.classList.remove('save-animation');
+                setTimeout(() => notification.classList.remove('show'), 3000);
+            }, 1000);
+        }
+        
+        // Функция сброса игры
+        function resetGame() {
+            if (confirm('Вы уверены, что хотите сбросить весь прогресс? Ваши балансы будут восстановлены до начальных значений.')) {
+                // Сбрасываем балансы
+                balances = [1000, 1000, 1000];
+                
+                // Обновляем UI
+                for (let i = 1; i <= 3; i++) {
+                    document.getElementById(`balance${i}`).textContent = balances[i-1].toLocaleString();
+                    document.getElementById(`win${i}`).textContent = '';
+                }
+                
+                // Удаляем сохранение
+                localStorage.removeItem('casinoSave');
+                
+                // Обновляем информацию о сохранении
+                document.getElementById('lastSaveInfo').textContent = 'Прогресс сброшен. Данные сохранения удалены.';
+                
+                // Показываем уведомление
+                const notification = document.getElementById('saveNotification');
+                const saveTime = document.getElementById('saveTime');
+                
+                saveTime.textContent = 'Прогресс сброшен!';
+                notification.style.background = 'rgba(231, 76, 60, 0.3)';
+                notification.style.border = '1px solid #e74c3c';
+                
+                notification.classList.add('show', 'save-animation');
+                
+                setTimeout(() => {
+                    notification.classList.remove('save-animation');
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                        notification.style.background = '';
+                        notification.style.border = '';
+                    }, 3000);
+                }, 1000);
+            }
+        }
+        
+        // Функция открытия модального окна пополнения
+        function openDepositModal(machine) {
+            currentDepositMachine = machine;
+            document.getElementById('depositModal').style.display = 'flex';
+        }
+        
+        // Функция закрытия модального окна
+        function closeDepositModal() {
+            document.getElementById('depositModal').style.display = 'none';
+        }
+        
+        // Функция пополнения баланса
+        function deposit(amount) {
+            const balanceElement = document.getElementById(`balance${currentDepositMachine}`);
+            const winElement = document.getElementById(`win${currentDepositMachine}`);
+            
+            // Добавляем бонусы в зависимости от суммы
+            let bonus = 0;
+            if (amount === 1000) bonus = 50;
+            if (amount === 2000) bonus = 200;
+            if (amount === 5000) bonus = 1000;
+            
+            const totalAmount = amount + bonus;
+            
+            // Обновляем баланс
+            balances[currentDepositMachine-1] += totalAmount;
+            balanceElement.textContent = balances[currentDepositMachine-1].toLocaleString();
+            
+            // Показываем сообщение о пополнении
+            winElement.textContent = `Баланс пополнен на ${totalAmount.toLocaleString()} ★!`;
+            winElement.classList.add('deposit-animation');
+            
+            // Сохраняем игру
+            saveGame();
+            
+            // Закрываем модальное окно через 1 секунду
+            setTimeout(() => {
+                closeDepositModal();
+                setTimeout(() => {
+                    winElement.classList.remove('deposit-animation');
+                    winElement.textContent = '';
+                }, 2000);
+            }, 1000);
+        }
+        
+        // Функция для вращения барабанов
+        function spin(machine) {
+            const winElement = document.getElementById(`win${machine}`);
+            const balanceElement = document.getElementById(`balance${machine}`);
+            winElement.textContent = '';
+            
+            // Проверка баланса
+            if (balances[machine-1] < 10) {
+                winElement.textContent = 'Недостаточно средств! Пополните баланс.';
+                return;
+            }
+            
+            // Снимаем ставку
+            balances[machine-1] -= 10;
+            balanceElement.textContent = balances[machine-1].toLocaleString();
+            
+            // Анимация вращения
+            for (let i = 1; i <= 3; i++) {
+                const slot = document.getElementById(`slot${machine}-${i}`);
+                slot.classList.add('spinning');
+            }
+            
+            // Генерация результатов
+            setTimeout(() => {
+                const results = [];
+                for (let i = 1; i <= 3; i++) {
+                    const slot = document.getElementById(`slot${machine}-${i}`);
+                    slot.classList.remove('spinning');
+                    
+                    // Выбираем случайный символ
+                    const randomIndex = Math.floor(Math.random() * symbols[machine-1].length);
+                    const symbol = symbols[machine-1][randomIndex];
+                    slot.textContent = symbol;
+                    results.push(symbol);
+                }
+                
+                // Проверка выигрыша
+                checkWin(results, machine);
+                
+                // Сохраняем игру
+                saveGame();
+            }, 1000);
+        }
+        
+        // Функция проверки выигрыша
+        function checkWin(results, machine) {
+            const winElement = document.getElementById(`win${machine}`);
+            const balanceElement = document.getElementById(`balance${machine}`);
+            
+            // Все символы одинаковые
+            if (results[0] === results[1] && results[1] === results[2]) {
+                const winAmount = 200;
+                winElement.textContent = `ДЖЕКПОТ! +${winAmount} ★`;
+                balances[machine-1] += winAmount;
+                balanceElement.textContent = balances[machine-1].toLocaleString();
+                winElement.classList.add('win-animation');
+                setTimeout(() => winElement.classList.remove('win-animation'), 1500);
+            }
+            // Два одинаковых символа
+            else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
+                const winAmount = 50;
+                winElement.textContent = `Выигрыш! +${winAmount} ★`;
+                balances[machine-1] += winAmount;
+                balanceElement.textContent = balances[machine-1].toLocaleString();
+                winElement.classList.add('win-animation');
+                setTimeout(() => winElement.classList.remove('win-animation'), 1500);
+            }
+            // Нет выигрыша
+            else {
+                winElement.textContent = 'Повезёт в следующий раз!';
+            }
+        }
+        
+        // Функция максимальной ставки
+        function maxBet(machine) {
+            const winElement = document.getElementById(`win${machine}`);
+            const balanceElement = document.getElementById(`balance${machine}`);
+            
+            // Проверка баланса
+            if (balances[machine-1] < 100) {
+                winElement.textContent = 'Недостаточно средств! Пополните баланс.';
+                return;
+            }
+            
+            // Снимаем ставку
+            balances[machine-1] -= 100;
+            balanceElement.textContent = balances[machine-1].toLocaleString();
+            
+            // Анимация вращения
+            for (let i = 1; i <= 3; i++) {
+                const slot = document.getElementById(`slot${machine}-${i}`);
+                slot.classList.add('spinning');
+            }
+            
+            // Генерация результатов
+            setTimeout(() => {
+                const results = [];
+                for (let i = 1; i <= 3; i++) {
+                    const slot = document.getElementById(`slot${machine}-${i}`);
+                    slot.classList.remove('spinning');
+                    
+                    // Больше шансов на выигрыш при максимальной ставке
+                    const chance = Math.random();
+                    let symbol;
+                    
+                    if (chance < 0.6) {
+                        // 60% шанс на одинаковые символы
+                        symbol = symbols[machine-1][Math.floor(Math.random() * 3)];
+                    } else {
+                        // 40% шанс на случайные символы
+                        symbol = symbols[machine-1][Math.floor(Math.random() * symbols[machine-1].length)];
+                    }
+                    
+                    slot.textContent = symbol;
+                    results.push(symbol);
+                }
+                
+                // Проверка выигрыша
+                checkWin(results, machine);
+                
+                // Сохраняем игру
+                saveGame();
+            }, 1000);
+        }
+        
+        // Инициализация игры при загрузке страницы
+        window.onload = function() {
+            initGame();
+            
+            // Добавляем автоматическое сохранение при закрытии страницы
+            window.addEventListener('beforeunload', function(e) {
+                saveGame();
+            });
+        };
+    </script>
+</body>
+</html>
